@@ -232,7 +232,7 @@ if (LANG === 'es') {
   $('#play').textContent = '▶ Reproducir'; $('#rec').textContent = '● Grabar video (30 s)';
 }
 $('#langLink').href = LANG === 'es' ? '?lang=en' : '?lang=es'; $('#langLink').textContent = LANG === 'es' ? 'English version' : 'Versión en español';
-$('#play').onclick = () => { document.documentElement.requestFullscreen?.().catch(() => {}); start(false); };
+$('#play').onclick = () => { if (!RENDER) document.documentElement.requestFullscreen?.().catch(() => {}); start(false); };
 $('#rec').onclick = () => start(true);
 addEventListener('keydown', e => { if (e.key === 'Escape' && playing) finish(); });
 // idle preview behind the menu
