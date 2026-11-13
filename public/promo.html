@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TerraPass · 30-second Film</title>
+<meta name="description" content="30-second cinematic film of TerraPass, rendered live in the browser with real NASA-ISRO NISAR data. Can be recorded to a WebM/MP4 video.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #000; color: #eef3fb; font-family: Inter, system-ui, sans-serif; overflow: hidden; }
+  #out { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: contain; background: #000; display: block; }
+  .src { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; visibility: hidden; pointer-events: none; }
+  #ui { position: fixed; inset: 0; display: grid; place-content: center; justify-items: center; gap: 16px; background: radial-gradient(circle at 50% 40%, #0b1a33, #000 70%); z-index: 5; text-align: center; padding: 16px; }
+  #ui h1 { margin: 0; font-size: clamp(30px, 5vw, 56px); letter-spacing: -.03em; }
+  #ui p { margin: 0; color: #9aa7bd; max-width: 560px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  button { font: 600 15px Inter, sans-serif; border: 0; border-radius: 12px; padding: 13px 20px; cursor: pointer; }
+  .p { background: linear-gradient(135deg, #5ff6ff, #2f9bff); color: #021018; }
+  .g { background: rgba(255, 255, 255, .08); color: #eef3fb; border: 1px solid rgba(255, 255, 255, .2); }
+  button:disabled { opacity: .45; cursor: wait; }
+  #status { font: 500 12px 'JetBrains Mono', monospace; color: #5ff6ff; min-height: 18px; }
+  #hint { position: fixed; right: 14px; bottom: 12px; z-index: 6; font: 500 11px 'JetBrains Mono'; color: rgba(255, 255, 255, .45); }
+</style>
+</head>
+<body>
+<canvas id="out" width="1920" height="1080"></canvas>
+<div id="globeSrc" class="src"></div>
+<div id="terrSrc" class="src"></div>
+<div id="ui">
+  <h1>TerraPass · 30-second film</h1>
+  <p>Rendered live with Three.js from real NASA-ISRO NISAR data. Press <b>Play</b> to watch, or <b>Record video</b> to export a 1080p WebM you can upload or convert to MP4.</p>
+  <div class="row"><button class="p" id="play" disabled>▶ Play</button><button class="g" id="rec" disabled>● Record video (30 s)</button></div>
+  <div id="status">Preloading real NISAR interferogram…</div>
+  <a id="langLink" href="?lang=es" style="color:#5ff6ff;font-size:14px;">Versión en español</a>
+</div>
+<div id="hint">TerraPass · NASA Space Apps 2026</div>
+<script type="module" src="/js/promo.js"></script>
+</body>
+</html>

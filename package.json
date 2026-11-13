@@ -1,0 +1,19 @@
+{
+  "name": "terrapass-nisar",
+  "version": "3.0.0",
+  "description": "TerraPass v3 - Earth Change Passport powered by real NASA-ISRO NISAR L-band SAR data, NASA EONET, NASA POWER and IoT Cal/Val ground truth. NASA Space Apps Challenge 2026.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "compression": "1.7.4",
+    "express": "4.21.2"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TerraPass · Earth Change Passport</title>
+<meta name="description" content="TerraPass turns real NASA-ISRO NISAR L-band radar into an auditable change passport for every patch of Earth — floods under forests, crops, deforestation and earthquakes — validated with IoT ground truth. NASA Space Apps 2026.">
+<meta name="theme-color" content="#04060c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='14' fill='%235ff6ff'/%3E%3Cellipse cx='32' cy='32' rx='29' ry='10' fill='none' stroke='%23ffd166' stroke-width='3' transform='rotate(-25 32 32)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="boot"><div class="boot-ring"></div><p>Acquiring NISAR L-band signal…</p></div>
+
+<header class="nav">
+  <a class="brand" href="#hero" aria-label="TerraPass home">
+    <svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true"><circle cx="32" cy="32" r="13" fill="url(#bg)"/><ellipse cx="32" cy="32" rx="29" ry="10" fill="none" stroke="#ffd166" stroke-width="2.6" transform="rotate(-25 32 32)"/><circle cx="57" cy="20" r="3.4" fill="#ffd166"/><defs><radialGradient id="bg"><stop offset="0" stop-color="#9ff"/><stop offset="1" stop-color="#1f7ae0"/></radialGradient></defs></svg>
+    <span>Terra<b>Pass</b></span><em>v3</em>
+  </a>
+  <nav class="links">
+    <a href="#explorer">Explorer</a><a href="#nisar">Real NISAR</a><a href="#calval">Cal/Val</a><a href="#physics">Physics</a><a href="#events">Live Earth</a><a href="#whatsnew">What's new</a><a href="#architecture">Architecture</a>
+  </nav>
+  <div class="chips">
+    <span class="chip" id="chipCmr"><i class="dot"></i>NASA CMR…</span>
+    <span class="chip" id="chipSb"><i class="dot"></i>Supabase…</span>
+    <a class="btn btn-gold sm" href="/promo.html" target="_blank" rel="noopener">▶ 30-s film</a>
+    <a class="btn btn-ghost sm" href="/promo.html?lang=es" target="_blank" rel="noopener" title="Película en español">ES</a>
+  </div>
+</header>
+
+<!-- =============================================================== HERO -->
+<section id="hero">
+  <div id="globe" class="globe"></div>
+  <div class="hero-copy">
+    <p class="eyebrow">NASA Space Apps Challenge 2026 · “Dancing with the SARs”</p>
+    <h1>Every patch of Earth<br>deserves a <span class="grad">passport</span>.</h1>
+    <p class="lede">TerraPass turns <b>real NASA-ISRO NISAR L-band radar</b> into an auditable change history for every grid cell — floods hidden under forests, crop cycles, deforestation and earthquakes — cross-checked with IoT ground truth, NASA POWER, EONET and USGS.</p>
+    <div class="cta">
+      <button class="btn btn-primary" id="ctaQuake">See the real M7.2 Venezuela quake ↘</button>
+      <button class="btn btn-ghost" id="ctaDemo">Guided demo (6 cases)</button>
+    </div>
+    <div class="stats">
+      <div><b id="stGranules">—</b><span>NISAR science granules (L2/L3) indexed live from NASA CMR</span></div>
+      <div><b>24 cm</b><span>L-band wavelength · sees through canopy</span></div>
+      <div><b>12 days</b><span>global repeat · every land surface</span></div>
+      <div><b id="stEvents">—</b><span>NASA EONET events on the globe</span></div>
+    </div>
+  </div>
+  <div class="globe-legend">
+    <span><i style="background:#45e3ff"></i>Latest real NISAR footprints</span>
+    <span><i style="background:#ff6b35"></i>Wildfires</span><span><i style="background:#3aa0ff"></i>Floods</span><span><i style="background:#d8b4fe"></i>Storms</span><span><i style="background:#ffd166"></i>Study areas</span>
+    <small id="sunInfo"></small>
+  </div>
+  <a class="scroll-hint" href="#explorer" aria-label="Scroll to explorer"><span></span></a>
+</section>
+
+<!-- =========================================================== EXPLORER -->
+<section id="explorer" class="sec">
+  <div class="sec-head">
+    <p class="kicker">01 · Interactive digital twin</p>
+    <h2>Real terrain. Real radar. One passport per cell.</h2>
+    <p class="sub">Choose a study area, a layer and a pass. Real elevation + imagery build the 3D twin; real NISAR quicklooks from NASA's ASF DAAC are georeferenced and draped on top. Click any cell to open its change passport.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="seg" id="aoiTabs"></div>
+    <div class="seg layers" id="layerTabs"></div>
+    <div class="toggles">
+      <label class="tgl"><input type="checkbox" id="tglDance"><span></span>Dance (3D pulse)</label>
+      <label class="tgl"><input type="checkbox" id="tglGrid"><span></span>Grid</label>
+    </div>
+  </div>
+
+  <div class="explorer">
+    <div class="stage" id="stage">
+      <div class="hud tl"><b id="hudAoi">—</b><span id="hudMeta">—</span></div>
+      <div class="hud tr" id="hudLegend"></div>
+      <div class="loading" id="stageLoading"><div class="bar"><i id="loadBar"></i></div><span id="loadText">Loading…</span></div>
+      <div class="demo-card" id="demoCard" hidden>
+        <small id="demoStep">1 / 6</small><h4 id="demoTitle"></h4><p id="demoText"></p>
+        <div><button class="btn btn-ghost sm" id="demoClose">Close</button><button class="btn btn-primary sm" id="demoNext">Next →</button></div>
+      </div>
+      <div class="timeline">
+        <button class="icon-btn" id="btnPlay" aria-label="Play">▶</button>
+        <input type="range" id="tSlider" min="0" max="11" value="1" aria-label="Pass">
+        <div class="tlabel"><b id="tDate">—</b><span id="tInfo">—</span></div>
+      </div>
+    </div>
+
+    <aside class="passport" id="passport">
+      <div class="pp-head">
+        <div><p class="kicker">Change passport</p><h3 id="ppTitle">Click a cell</h3><span id="ppCoords" class="mono">—</span></div>
+        <span class="badge" id="ppSource">—</span>
+      </div>
+      <canvas id="ppChart" class="chart"></canvas>
+      <div id="ppEvents" class="events"></div>
+      <div class="plain" id="ppPlain"></div>
+      <h5>Evidence fusion</h5>
+      <ul class="evidence" id="ppEvidence"></ul>
+      <div class="pp-actions">
+        <button class="btn btn-ghost sm" id="btnSavePp">Save to Supabase</button>
+        <button class="btn btn-primary sm" id="btnDlPp">Download passport (JSON)</button>
+      </div>
+      <small class="note" id="ppNote"></small>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================================================== NISAR -->
+<section id="nisar" class="sec">
+  <div class="sec-head">
+    <p class="kicker">02 · Real NISAR data, live from NASA</p>
+    <h2>The archive behind every pixel.</h2>
+    <p class="sub">TerraPass queries NASA's Common Metadata Repository in real time, builds a repeat-pass stack (same track, frame and polarisation) and georeferences each ASF browse quicklook over the study area. Click a frame to jump the 3D twin to that date.</p>
+  </div>
+  <div class="filmstrips">
+    <div><h4>GUNW · unwrapped interferograms <small id="fsGunwInfo"></small></h4><div class="filmstrip" id="fsGunw"></div></div>
+    <div><h4>GCOV · polarimetric backscatter (HH / HV) <small id="fsGcovInfo"></small></h4><div class="filmstrip" id="fsGcov"></div></div>
+  </div>
+  <div class="table-wrap">
+    <table class="tbl" id="granTable">
+      <thead><tr><th>Acquisition (UTC)</th><th>Product</th><th>Track / Frame</th><th>Pass</th><th>Pol.</th><th>Size</th><th>Files</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="note">HDF5 science files are distributed by the ASF DAAC and require a free NASA Earthdata Login; browse quicklooks are public. Granule IDs encode cycle, track, direction (A/D) and frame.</p>
+</section>
+
+<!-- ============================================================= CALVAL -->
+<section id="calval" class="sec">
+  <div class="sec-head">
+    <p class="kicker">03 · Ground truth in real time</p>
+    <h2>Radar says it changed. The ground confirms it.</h2>
+    <p class="sub">An ESP32 Cal/Val node (simulated in Wokwi) streams soil moisture, water level, dielectric constant, tilt and seismic acceleration to Supabase Realtime. NASA POWER provides an independent satellite/reanalysis reference for the same coordinates.</p>
+  </div>
+  <div class="calval">
+    <div class="card node">
+      <div class="node-head"><div><small>Active node</small><b id="nodeId">—</b></div><span class="badge live" id="nodeRegime">—</span></div>
+      <div class="metrics" id="metrics"></div>
+      <div class="row">
+        <select id="simScenario" aria-label="Scenario"><option value="ven">Venezuela · post-seismic</option><option value="per">Peru · flooded rice paddy</option><option value="ctl">Atacama · hyper-arid control</option></select>
+        <button class="btn btn-primary sm" id="btnSend">Emit IoT reading</button>
+        <button class="btn btn-ghost sm" id="btnAuto">Auto (Wokwi): OFF</button>
+      </div>
+      <small class="note" id="iotSync"></small>
+    </div>
+    <div class="card"><h4>Topp equation · εr vs. volumetric moisture</h4><canvas id="toppChart" class="chart"></canvas><small class="note">Topp et al. (1980): the dielectric constant drives L-band backscatter — wetter soil, brighter radar.</small></div>
+    <div class="card wide"><h4>NASA POWER · rainfall & surface soil wetness <small id="powerInfo"></small></h4><canvas id="powerChart" class="chart"></canvas></div>
+    <div class="card wide">
+      <h4>Live log · <code>public.ground_truth</code></h4>
+      <div class="table-wrap short"><table class="tbl" id="logTable"><thead><tr><th>Time</th><th>Node</th><th>AOI</th><th>Soil θ</th><th>Water</th><th>εr</th><th>Vibration</th><th>Edge regime</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ PHYSICS -->
+<section id="physics" class="sec">
+  <div class="sec-head">
+    <p class="kicker">04 · Synthetic Aperture Radar physics</p>
+    <h2>Five rules. Zero black boxes.</h2>
+    <p class="sub">Each detection is a hypothesis backed by physics and a 5-part confidence score (magnitude, persistence, coherence, rule agreement, baseline depth). Change is measured with a robust z-score: median and MAD of at least four previous passes.</p>
+  </div>
+  <div class="physics">
+    <div class="card"><h4>Polarimetric decision space · selected cell</h4><canvas id="polarChart" class="chart tall"></canvas></div>
+    <div class="rules">
+      <div class="rule" style="--c:#ff5d73"><b>1 · Crustal deformation</b><p>GUNW unwrapped phase → line-of-sight displacement <code>d = −λΔφ / 4π</code> &gt; 8 mm with coherence γ &gt; 0.25.</p></div>
+      <div class="rule" style="--c:#3aa0ff"><b>2 · Open-water flooding</b><p><code>ΔHH &lt; −4.5 dB</code> and <code>ΔHV &lt; −4.0 dB</code>: calm water acts as a mirror (specular reflection).</p></div>
+      <div class="rule" style="--c:#22d3ee"><b>3 · Flooding under canopy</b><p><code>ΔHH &gt; +2.5 dB</code> with stable HV: trunk–water double bounce, invisible to optical satellites.</p></div>
+      <div class="rule" style="--c:#f59e0b"><b>4 · Vegetation loss</b><p><code>ΔHV &lt; −3.0 dB</code> for ≥ 3 passes: less volume scattering from the canopy.</p></div>
+      <div class="rule" style="--c:#a3e635"><b>5 · Agricultural activity</b><p><code>ΔHH &lt; −3.0 dB</code> over 1–3 passes then recovery: rice paddy flooding, ploughing.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================= EVENTS -->
+<section id="events" class="sec">
+  <div class="sec-head">
+    <p class="kicker">05 · Live Earth context</p>
+    <h2>NASA EONET + USGS: the world doesn't wait.</h2>
+    <p class="sub">Natural events from NASA's Earth Observatory Natural Event Tracker and earthquakes from USGS feed the evidence engine: when radar change coincides with an independent event, confidence goes up.</p>
+  </div>
+  <div class="events-grid">
+    <div class="card"><h4>NASA EONET · last 60 days <small id="eonetInfo"></small></h4><div class="cat-bars" id="eonetCats"></div><ul class="feed" id="eonetList"></ul></div>
+    <div class="card"><h4>USGS earthquakes near <span id="quakeAoi">—</span> · last 12 months</h4><ul class="feed" id="quakeList"></ul></div>
+  </div>
+</section>
+
+<!-- ========================================================== WHATS NEW -->
+<section id="whatsnew" class="sec">
+  <div class="sec-head">
+    <p class="kicker">06 · Resources added in v3</p>
+    <h2>From simulated prototype to real NASA data.</h2>
+    <p class="sub">What we added on top of the original TerraPass v2 prototype (Render + Supabase + simulated radar).</p>
+  </div>
+  <div class="new-grid">
+    <article class="new"><span>NASA data</span><h4>Real NISAR L2 GCOV & GUNW</h4><p>Live NASA CMR search + ASF DAAC browse products, repeat-pass stacks and georeferencing over each study area.</p></article>
+    <article class="new"><span>NASA data</span><h4>Coseismic interferograms</h4><p>Real NISAR pairs spanning the 24 Jun 2026 M7.2/M7.5 Venezuela doublet, auto-matched with the USGS catalogue.</p></article>
+    <article class="new"><span>NASA data</span><h4>NASA EONET v3</h4><p>Wildfires, floods, storms and volcanoes plotted live on the globe and fused as passport evidence.</p></article>
+    <article class="new"><span>NASA data</span><h4>NASA POWER</h4><p>Daily rainfall (IMERG) and surface soil wetness (MERRA-2) as an independent Cal/Val reference.</p></article>
+    <article class="new"><span>NASA imagery</span><h4>Blue & Black Marble globe</h4><p>Photoreal Earth with real-time solar terminator, ocean glint, clouds, atmosphere and NISAR's 747 km orbit.</p></article>
+    <article class="new"><span>3D</span><h4>Real-terrain digital twin</h4><p>SRTM-based elevation + satellite imagery, physical sky, shadows, sea level and NISAR fly-over scan.</p></article>
+    <article class="new"><span>Science</span><h4>Evidence fusion & JSON passport</h4><p>Radar rules + USGS + EONET + IoT + POWER in one auditable, downloadable passport per cell.</p></article>
+    <article class="new"><span>Cloud</span><h4>Azure deployment</h4><p>Node gateway with caching on Azure App Service, Docker image for Container Apps, CI/CD with GitHub Actions and Bicep IaC.</p></article>
+    <article class="new"><span>Story</span><h4>30-second film + recorder</h4><p>Cinematic in-browser film rendered live with Three.js and exportable to video for the judges.</p></article>
+  </div>
+  <div class="table-wrap">
+    <table class="tbl compare"><thead><tr><th>Capability</th><th>v2 prototype</th><th>v3 (this release)</th></tr></thead><tbody>
+      <tr><td>Radar data</td><td>Simulated series</td><td><b>Real NISAR GCOV + GUNW</b> (NASA CMR / ASF) + calibrated simulator for demos</td></tr>
+      <tr><td>Terrain</td><td>Procedural sine surface</td><td><b>Real elevation + imagery</b> per study area</td></tr>
+      <tr><td>Globe / context</td><td>—</td><td><b>Photoreal Earth</b>, live NISAR footprints, EONET events</td></tr>
+      <tr><td>Validation</td><td>IoT only</td><td>IoT + <b>NASA POWER</b> + <b>USGS</b> + <b>EONET</b> evidence fusion</td></tr>
+      <tr><td>Hosting</td><td>Render (static)</td><td><b>Azure App Service</b> / Container Apps with API gateway + cache</td></tr>
+      <tr><td>Language</td><td>Spanish</td><td>English (international judging)</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<!-- ======================================================= ARCHITECTURE -->
+<section id="architecture" class="sec">
+  <div class="sec-head">
+    <p class="kicker">07 · Engineering & scientific honesty</p>
+    <h2>Built on Azure. Honest about its limits.</h2>
+  </div>
+  <div class="arch">
+    <div class="node-a"><small>Orbit & ground</small><b>NISAR · ESP32</b><p>L-/S-band SAR, 12-day repeat · Wokwi Cal/Val node</p></div>
+    <div class="arrow"></div>
+    <div class="node-a"><small>NASA open data</small><b>CMR · ASF · EONET · POWER</b><p>+ USGS ComCat, AWS Terrain Tiles</p></div>
+    <div class="arrow"></div>
+    <div class="node-a azure"><small>Microsoft Azure</small><b>App Service (Node 20)</b><p>API gateway · cache · CORS-safe image proxy · CI/CD</p></div>
+    <div class="arrow"></div>
+    <div class="node-a"><small>Browser</small><b>Three.js twin + engine</b><p>robust z-score · 5 rules · passport</p></div>
+    <div class="arrow"></div>
+    <div class="node-a"><small>Persistence</small><b>Supabase</b><p>PostgreSQL / PostGIS · Realtime</p></div>
+  </div>
+  <div class="limits">
+    <div class="card"><h4>Declared limits</h4><ul>
+      <li>Real-data change maps use <b>browse quicklooks</b> (relative dB, ~150 m), not calibrated γ⁰ from HDF5 — the pipeline is ready to swap in full-resolution GCOV.</li>
+      <li>Georeferencing uses the granule footprint bounding box; expect sub-cell offsets.</li>
+      <li>Robust baseline needs ≥ 4 previous passes (48 days); earlier passes are not classified.</li>
+      <li>Every output is a <b>hypothesis with a confidence breakdown</b>, never a verdict.</li>
+    </ul></div>
+    <div class="card"><h4>Glossary</h4><dl>
+      <dt>SAR</dt><dd>Synthetic Aperture Radar: an active sensor that images day and night, through clouds.</dd>
+      <dt>HH / HV</dt><dd>Transmit-receive polarisations. HH ↔ surface & double bounce; HV ↔ volume (vegetation).</dd>
+      <dt>Interferogram (GUNW)</dt><dd>Phase difference of two passes: each colour cycle is a contour of ground motion.</dd>
+      <dt>Coherence γ</dt><dd>How similar two passes are (0–1). Low γ = the surface was disturbed.</dd>
+    </dl></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div><b>TerraPass v3</b> · NASA Space Apps Challenge 2026 · Built by <b>Jhon Alberto Aguilar Quispe</b> &amp; <b>Crisber Ambicho Reynoso</b></div>
+  <small>Data: NASA/JPL-Caltech/ISRO NISAR via ASF DAAC (NASA CMR) · NASA EONET · NASA POWER (LaRC) · NASA Visible Earth Blue/Black Marble · USGS ComCat · AWS Terrain Tiles (SRTM/GMTED) · Imagery © Esri, Maxar, Earthstar Geographics. TerraPass is a student project and is not endorsed by NASA.</small>
+</footer>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
